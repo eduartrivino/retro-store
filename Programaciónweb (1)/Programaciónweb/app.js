@@ -1,4 +1,4 @@
-/* const nombreTienda = "Retro Arcade Kingdoom";
+/* /* const nombreTienda = "Retro Arcade Kingdoom";
 let saldoEnCaja = 500.0;
 
 console.log("=== Bienvenido A:",nombreTienda, "===");
@@ -49,7 +49,7 @@ function VenderJuego (idBusqueda){
 VenderJuego(3);
 console.log("Nievo saldo en caja es: $" + saldoEnCaja); */
 
-
+/* 
 //Datos iniciales con imagenes
 const inventario =[
     {
@@ -195,3 +195,73 @@ async function cargarEdicionesPokemon() {
 }
 
 renderizarCatalogo(inventario);
+
+ */
+
+ */
+
+let inventario =[];
+let saldoEnCaja =0;
+
+const contenedor = document.getElementById("contenedor-juegos");
+
+// Obtener datos desde la api server.js
+async function obtenerJuegosDesdeBD(){
+    try{
+        const respuesta = await fetch("http://localhost:3000/api/juegos");
+        const datosJuegos = await respuesta.json();
+
+        //Guardamos los datos traidos de la base de datos en el arreglo global inventario
+
+        inventario = datosJuegos;
+        //Renderizamos las tarjetas para observarsen en la pantalla
+
+        renderizarCatalogo(inventario);
+    
+    }catch(error){
+        console.error("Error al conectar con la API server.js",error);
+    }
+
+    //Renderizar el catalogo en el DOM
+    function renderizarCatalogo(lista){
+        if(!contenedor) return;
+        contenedor.innerHTML="";
+
+        if(!lista || lista.length ==0){
+            contenedor.innerHTML= <p class="text-center text-muted fs-5">No hay juegos disponibles en la tienda</p>
+            return;
+        }
+
+        for(let i =0; i<lista.length; i++){
+            const juego = lista[i];
+
+        
+
+        const valorRaw = juego.precio !== undefined ? juego.precio : juego.Precio;
+        const precioValido = valorRaw !== undefined ? Number(valorRaw) : 0;
+
+            contenedor.innerHTML += `
+            <div class="col-md-3 mb-4">
+                <div class="card bg-secondary text-white h-100 shadow border-0">
+                    <!-- Portada del videojuego -->
+                    <img src="${juego.imagen}" class="card-img-top p-2 bg-dark" alt="${juego.titulo}" style="height: 220px; object-fit: contain;">
+                    
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold">${juego.titulo}</h5>
+                        <span class="badge bg-info text-dark mb-2 w-auto align-self-start">${juego.consola}</span>
+                        <p class="card-text mb-1 fs-5">Precio: <strong>$${preciovalido.toFixed(2)}</strong></p>
+                        <p class="card-text text-light">Stock: <strong>${juego.stock}</strong> unidades</p>
+                        
+                        <button class="btn btn-primary mt-auto fw-bold" onclick="comprarJuego(${juego.id})">
+                            🛒 Comprar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        }
+    }
+}
+
+// inicializacion
+obtenerJuegosDesdeBD();
